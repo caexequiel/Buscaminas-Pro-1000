@@ -1,0 +1,315 @@
+<Informacion>:
+    id: informacion
+    size_hint: 1,.1
+    orientation:'horizontal'
+    canvas:
+        Color:
+            rgba: 1,0,0,1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+<CampoMinado>:
+    id: campominado
+    spacing: '10dp'
+    size_hint: 1,1
+    padding: 10
+    orientation:'horizontal'
+    canvas:
+        Color:
+            rgba: 1,1,0,1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+<Volver>:
+    id: boton_volver
+    size_hint: 1,.1
+    orientation:'vertical'
+    canvas:
+        Color:
+            rgba: 0,0,0,0
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    AnchorLayout:
+        anchor_x: "right"
+        Button:
+            text: "Volver"
+            id: "salirdeljuego"
+            size_hint_x: 0.3
+            size_hint_y: 1
+            font_size: 20
+            background_color: 0,0,0
+            font_name: "font/norwester.otf"
+            bold: True
+            on_release: 
+                app.root.current = "screen_menu"
+                root.manager.transition.direction = 'right'
+<Contenedor>:
+    id: contenedor
+    spacing: 10
+    size_hint: 1,1
+    orientation:'vertical'
+    canvas:
+        Color:
+            rgba: 0,0,0,1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+<JuegoBuscamina>:
+    id: Juego
+    name: "juego"
+    # BoxLayout:
+    #     id: contenedor
+    #     size_hint: 1,1
+    #     orientation:'vertical'
+    #     canvas:
+    #         Color:
+    #             rgba: 0,0,0,1
+    #         Rectangle:
+    #             pos: self.pos
+    #             size: self.size
+        
+    #     BoxLayout:
+    #         id: informacion
+    #         size_hint: 1,.1
+    #         orientation:'horizontal'
+    #         canvas:
+    #             Color:
+    #                 rgba: 1,0,0,1
+    #             Rectangle:
+    #                 pos: self.pos
+    #                 size: self.size
+    #     BoxLayout:
+    #         id: campominado
+    #         size_hint: 1,1
+    #         padding: 10
+    #         orientation:'horizontal'
+    #         canvas:
+    #             Color:
+    #                 rgba: 0,0,0,0
+    #             Rectangle:
+    #                 pos: self.pos
+    #                 size: self.size
+    #     BoxLayout:
+    #         id: boton_volver
+    #         size_hint: 1,.1
+    #         orientation:'vertical'
+    #         canvas:
+    #             Color:
+    #                 rgba: 0,0,0,0
+    #             Rectangle:
+    #                 pos: self.pos
+    #                 size: self.size
+    #         AnchorLayout:
+                # anchor_x: "right"
+                # Button:
+                #     text: "Volver"
+                #     id: "salirdeljuego"
+                #     size_hint_x: 0.3
+                #     size_hint_y: 1
+                #     font_size: 20
+                #     background_color: 0,0,0
+                #     font_name: "font/norwester.otf"
+                #     bold: True
+                #     on_release: 
+                #         app.root.current = "screen_menu"
+                #         root.manager.transition.direction = 'right'
+
+<Niveles>:
+    name: "niveles"
+    BoxLayout:
+        size_hint: 1,1
+        orientation:'vertical'
+        canvas:
+            Color:
+                rgba: 0,0,0,0
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        AnchorLayout:
+            orientation: 'vertical'
+            AnchorLayout:
+                anchor_x: 'center'
+                anchor_x: 'center'
+                Image:
+                    source: "img/fondo.png"
+                    opacity: 0.1
+                AnchorLayout:
+                    size_hint: .8, .6
+                    zorder: 1
+                    canvas:
+                        Color:
+                            rgba: 0, 0, 0, 0
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size
+                    BoxLayout:
+                        size_hint: 1,1
+                        orientation:'vertical'
+                        canvas:
+                            Color:
+                                rgba: 0,0,0,0
+                            Rectangle:
+                                pos: self.pos
+                                size: self.size
+                        
+                        BoxLayout:
+                            orientation: 'vertical'
+                            size_hint: 1,1
+                            canvas:
+                                Color:
+                                    rgba: 0,1,0,0
+                                Rectangle:
+                                    pos: self.pos
+                                    size: self.size
+                            #para que estén bien ordenados los botones
+                            BoxLayout:
+                                padding: ('0dp', '0dp', '0dp', '10dp')
+                                AnchorLayout:
+                                    Label:
+                                        font_name: "font/broken_destroit.ttf"
+                                        text:'Nivel'
+                                        font_size: 40
+                                        halign: 'center'
+                                        valign:'middle'
+                            BoxLayout:
+                                AnchorLayout:
+                                    Button:
+                                        id: "level_principiante"
+                                        size_hint_x: 0.3
+                                        size_hint_y: 1
+                                        text:'Principiante'
+                                        font_size: 20
+                                        background_color: 0,0,0
+                                        font_name: "font/norwester.otf"
+                                        bold: True
+                                        on_press:
+                                            self.background_color = "#74C4E1"
+                                            root.ir_a_juego(9,10)
+                                            app.root.current = "juego"
+                                            root.manager.transition.direction = 'left'
+                                            
+                            
+                            BoxLayout:
+                                AnchorLayout:
+                                    Button:
+                                        id: "level_intermedio"
+                                        size_hint_x: 0.3
+                                        size_hint_y: 1
+                                        text:'Intermedio'
+                                        font_size: 20
+                                        background_color: 0,0,0
+                                        font_name: "font/norwester.otf"
+                                        bold: True
+                                        on_press:
+                                            self.background_color = "#74C4E1"
+                                            root.ir_a_juego(16, 40)
+                                            app.root.current = "juego"
+                                            root.manager.transition.direction = 'left'
+                            BoxLayout:
+                                AnchorLayout:
+                                    Button:
+                                        id: "level_avanzado"
+                                        size_hint_x: 0.3
+                                        size_hint_y: 1
+                                        text:'Avanzado'
+                                        font_size: 20
+                                        background_color: 0,0,0
+                                        font_name: "font/norwester.otf"
+                                        bold: True
+                                        on_press:
+                                            self.background_color = "#74C4E1"
+                                            root.ir_a_juego(24,96)
+                                            app.root.current = "juego"
+                                            root.manager.transition.direction = 'left'
+
+                            BoxLayout:
+                                AnchorLayout:
+                                    Button:
+                                        id: "level_dios"
+                                        size_hint_x: 0.3
+                                        size_hint_y: 1
+                                        text:'Dios'
+                                        font_size: 20
+                                        background_color: 0,0,0
+                                        font_name: "font/norwester.otf"
+                                        bold: True
+                                        on_press:
+                                            self.background_color = "#74C4E1"
+                                            root.ir_a_juego(30,99)
+                                            app.root.current = "juego"
+                                            root.manager.transition.direction = 'left'
+
+
+<MainWid>:
+    Screen:
+        name: "screen_menu"
+        BoxLayout:
+            orientation: "vertical"
+            canvas:
+                Color:
+                    rgba: 0,0,0,0
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            AnchorLayout:
+                orientation: 'vertical'
+                AnchorLayout:
+                    anchor_x: 'center'
+                    anchor_x: 'center'
+                    Image:
+                        source: "img/fondo_menu.png"
+                        opacity: 0.1
+                    AnchorLayout:
+                        size_hint: .8, .3
+                        zorder: 1
+                        canvas:
+                            Color:
+                                rgba: 0, 0, 0, 0
+                            Rectangle:
+                                pos: self.pos
+                                size: self.size
+                        BoxLayout:
+                            size_hint: 1,1
+                            orientation:'vertical'
+                            canvas:
+                                Color:
+                                    rgba: 0,0,0,0
+                                Rectangle:
+                                    pos: self.pos
+                                    size: self.size
+                            Label:
+                                font_name: "font/broken_destroit.ttf"
+                                text:'Buscaminas Pro'
+                                font_size: 40
+                                halign: 'center'
+                                valign:'middle'
+                            AnchorLayout:
+                                anchor_x: 'center'
+                                anchor_x: 'center'
+                                Button:
+                                    id: "jugar"
+                                    size_hint_x: 0.3
+                                    size_hint_y: 0.5
+                                    text:'Jugar'
+                                    font_size: 20
+                                    background_color: 0,0,0
+                                    font_name: "font/norwester.otf"
+                                    bold: True
+                                    on_press:
+                                        self.background_color = "#74C4E1"
+                                        root.current = "niveles"
+                                        root.transition.direction = 'up'
+    JuegoBuscamina:
+    Niveles:
+    
+
+                
+
+
+
+
+
+            
+
