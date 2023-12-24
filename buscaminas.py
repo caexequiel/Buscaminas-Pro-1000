@@ -1,7 +1,8 @@
 import numpy
 import random
 
-
+# Lista de posiciones visitadas
+visitados = []
 def crear_campo_minado(n, m, proporcion):
     matriz = [[0 for i in range(m)] for j in range(n)]
     for i in range(n):
@@ -36,34 +37,37 @@ def mostrarMatriz(matriz):
         for j in range(len(matriz[0])):
             print(matriz[i][j], end=" ")
         print() 
-       
+
 def recorrer_matriz_radial(matriz, fila, columna,matrizUsuario):
-    # Lista de posiciones encontradas
-    posiciones_encontradas = []
-    # Recorre las celdas adyacentes
-    for fila_adyacente in range(fila - 1, fila + 2):
-        for columna_adyacente in range(columna - 1, columna + 2):
-            # Si la posición adyacente está dentro de la matriz
-            if 0 <= fila_adyacente < len(matriz) and 0 <= columna_adyacente < len(matriz[0]):
-                # Si la celda adyacente tiene valor cero
-                if matriz[fila_adyacente][columna_adyacente] == 0:
-                    # Toma la celda adyacente como nueva posición central
-                    fila = fila_adyacente
-                    columna = columna_adyacente
-                    #guardamos la elección del usuario
-                    eleccionUsuario(fila,columna, "-",matrizUsuario)
-                    
-                    
-                # Si el valor en la posición adyacente es distinto de 0
-                if matriz[fila_adyacente][columna_adyacente] != 0:
-                    # Agrega la posición a la lista de posiciones encontradas
-                    eleccionUsuario(fila_adyacente,columna_adyacente, matriz[fila_adyacente][columna_adyacente],matrizUsuario)
-                    posiciones_encontradas.append((fila_adyacente, columna_adyacente))
-
-    # Devuelve la lista de posiciones encontradas
-    print(posiciones_encontradas)
-    return posiciones_encontradas
-
+    ceros = []
+    ceros.append((fila, columna))
+    while len(ceros)>0:
+        fila,columna = ceros.pop()
+    #Si la casilla se puede destapar
+    if not matriz[fila][columna] == matrizUsuario[fila][columna] and matriz[fila][columna] != 0:
+        eleccionUsuario(fila, columna, str(matriz[fila][columna]),matrizUsuario)
+    # Si no hay minas cerca, intento destapar las vecinas
+    if matriz[fila][columna] == 0 and matriz[fila][columna] != matrizUsuario[fila][columna]:
+        for fila2 in range(max(0, fila - 1), min(9, fila + 1) + 1):
+            for columna2 in range(max(0, columna - 1), min(9, columna + 1) + 1):
+                # Si la posición está dentro de los límites de la matriz
+                if 0 <= fila2 < len(matriz) and 0 <= columna2 < len(matriz[0]):
+                    if matriz[fila2][columna2] != 9:
+                        if matriz[fila2][columna2] == 0:
+                            eleccionUsuario(fila2, columna2, "-", matrizUsuario)
+                            ceros.append((fila2, columna2))
+                        else:
+                            eleccionUsuario(fila2, columna2, matriz[fila2][columna2], matrizUsuario)
+    recurrente(matriz, ceros, matrizUsuario)
+    
+def recurrente(matriz, ceros, matrizUsuario):
+    for fila, columna in ceros:
+        # Si la posición no se ha visitado anteriormente
+        if (fila, columna) not in visitados:
+            # Agrega la posición a la lista de visitados
+            visitados.append((fila, columna))
+            # Llama a la función recursiva
+            recorrer_matriz_radial(matriz, fila, columna,matrizUsuario)
 def jugar(matriz,x,y, matrizUsuario):
     if matriz[x][y] == "b":
         print("perdiste")
@@ -83,13 +87,13 @@ def mecanicaJuego():
     #Campo de juego coloca las bombas en las diferentes posiciones
     CampoJuego = crear_campo_minado(nivel, nivel, 0.1)
     print("Campo de juego")
-    mostrarMatriz(CampoJuego)
+    #mostrarMatriz(CampoJuego)
     #la matriz contar es solo para el programa, ya están reveladas las celdas
     matriz_con_contar = contar_1_alrededor(CampoJuego)
     print("La matriz privada:")
     mostrarMatriz(matriz_con_contar)
     
-    matrizUsuario = [[0 for i in range(len(CampoJuego[0]))] for j in range(len(CampoJuego))]
+    matrizUsuario = [['[ ]' for i in range(len(CampoJuego[0]))] for j in range(len(CampoJuego))]
     print("La matriz que se le muestra al usuario")
     mostrarMatriz(matrizUsuario)
     
@@ -100,16 +104,16 @@ def mecanicaJuego():
     
     
     while (CampoJuego[x][y] == 0):
-        if matriz_con_contar[x][y] == 0:
-            recorrer_matriz_radial(matriz_con_contar, x, y, matrizUsuario)
-    
-        #jugar(matriz_con_contar,x,y, matrizUsuario)
+        # if matriz_con_contar[x][y] == 0:
+        #     recorrer_matriz_radial(matriz_con_contar, x, y, matrizUsuario)
+        jugar(matriz_con_contar,x,y, matrizUsuario)
         print("La matriz privada:")
         mostrarMatriz(matriz_con_contar)
-        x = int(input("Elije la fila: "))
-        y = int(input("Elije la columna: "))
         print("La matriz que se le muestra al usuario")
         mostrarMatriz(matrizUsuario)
+        x = int(input("Elije la fila: "))
+        y = int(input("Elije la columna: "))
+        
     print("Perdiste")
     
         
