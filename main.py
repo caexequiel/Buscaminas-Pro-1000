@@ -1,5 +1,7 @@
 import kivy
 import numpy as np
+#Importamos el juego que creamos
+import buscaminas as bm
 
 kivy.require("2.1.0")
 
@@ -15,7 +17,7 @@ from kivy.graphics import Canvas, Color, Rectangle
 from kivy.properties import ListProperty, StringProperty, ObjectProperty, NumericProperty
 
 import random
-
+nivel = 10
 class music():
     def __init__(self, music_number=1):
         self.music_number = music_number
@@ -42,10 +44,17 @@ class Niveles(Screen):
     def __init__(self, **kwargs):
         super(Niveles, self).__init__(**kwargs)
     def ir_a_juego(self, nivel, mina):
+        nivel = nivel
+        
+        #buscaminas.mecanicaJuego(nivel)
+        # Llamamos al módulo buscaminas
+        juego_buscaminas = MainApp.get_juego_buscaminas()
+        juego_buscaminas.mecanicaJuego(nivel)
         # Obtén los valores de nivel y mina      
         lanzar_juego = JuegoBuscamina()
+        
         self.manager.current = "juego"
-        return lanzar_juego
+        #return lanzar_juego
         
         
 class JuegoBuscamina(Screen):
@@ -60,36 +69,21 @@ class JuegoBuscamina(Screen):
         self.minas = []
         self.celdas = []
 
-        self.nivel = 9  
-        self.mina = 30
-        
+        # self.nivel = 9  
+        # self.mina = 30
+        print(nivel)
         self.crear_campo_minado()
          
     def crear_campo_minado(self):
-        nivel = self.nivel
-        minas = self.mina
-        num_celdas = nivel**2
-        #Generamos la posición de las minas de forma aleatoria
-        for i in range(minas):
-            self.minas.append(random.randint(0, num_celdas-1))
-        #print(self.minas)
-        
-        #Asignamos a las celdas un false cuándo no hay minas true cuándo sí las hay
-        self.celdas = self.minar_celdas(num_celdas, self.minas)
-        #print(self.celdas)
-        #Agregamos los widget con el Grid y los botones
-        self.mostrar_campo(self.nivel)
+        juego_buscaminas = MainApp.get_juego_buscaminas()
+        CampoJuego = juego_buscaminas.crear_campo_minado(nivel, nivel, 0.1)
+        #Creamos la matriz privada
+        matriz_privada = juego_buscaminas.contar_1_alrededor(CampoJuego)
+        self.mostrar_campo(matriz_privada)
         
         #print(self.celdas)
+    def mostrar_campo(self, matriz_privada):
         
-    def minar_celdas(self, num_celdas, minas):
-        celdas = [1] * num_celdas
-        for i in range(num_celdas):
-            if i not in minas:
-                celdas[i] = 0
-        return celdas
-  
-    def mostrar_campo(self, nivel):
         self.bandera = False
         self.contenedor = Contenedor()
         self.volver = Volver()
@@ -99,7 +93,6 @@ class JuegoBuscamina(Screen):
         self.box_layout = BoxLayout(
             orientation="vertical"
         )
-        
         #Agregamos los widgets
         self.box_layout.add_widget(self.informacion)
         self.box_layout.add_widget(self.campominado)
@@ -110,7 +103,7 @@ class JuegoBuscamina(Screen):
         # Eliminamos los elementos del superBox
         self.campominado.clear_widgets()
 
-        num_celdas = self.nivel**2
+        num_celdas = nivel**2
         
         # Crea el GridLayout
         grid_layout = GridLayout(
@@ -118,9 +111,11 @@ class JuegoBuscamina(Screen):
             cols=nivel,  
             size_hint=(1, 1),
          )
+
         # Añade el GridLayout al BoxLayout
         self.campominado.add_widget(grid_layout)
         # Crea los botones
+        
         botones = []
         for i in range(num_celdas):
             button = Button(
@@ -128,38 +123,29 @@ class JuegoBuscamina(Screen):
             size_hint=(1, 1),
             )
             #button.on_press(text = str(celdas[i]))
-            button.bind(on_press=lambda x, i=i: self.abrir_boton(x, i))  # Usa bind() para pasar el botón como argumento
+            button.bind(on_press=lambda x, i=i: self.abrir_boton(x, i,matriz_privada))  # Usa bind() para pasar el botón como argumento
             
             botones.append(button)
             # Añade los botones al GridLayout
         for boton in botones:
             grid_layout.add_widget(boton)
-        #print(self.nivel)
-        #print(self.mina)
-    
-    def abrir_boton(self,boton, indice):
-        valor_celda = int(self.celdas[indice])
-        #boton.text = str(valor_celda)
-        #print("El valor del indice es: "+ str(indice))
-        #print("El valor del botón es: "+str(boton))
 
-        # Acciones del juego (ejemplo básico):
-        print(self.celdas)
-        if self.celdas[valor_celda] == 1:
-            print("self.celdas es: "+str(self.celdas))
-            print("self.celdas[valor_celda] es: "+str(self.celdas[valor_celda]))
-            boton.text = "1"
-            # ¡Mina!          
+        
+    
+    def abrir_boton(self,boton, indice, matriz_privada):
+        juego_buscaminas = MainApp.get_juego_buscaminas()
+        # Obtener las coordenadas del botón
+        x = (indice - 1) // 9
+        y = (indice - 1) % 9
+
+        boton.text = str(matriz_privada[x][y])
+        print(boton.text)
+        if boton.text == "b":    
             print("¡Has perdido!")
             # Implementar acciones para finalizar la partida
         else:
-            print("self.celdas es: "+str(self.celdas))
-            print("self.celdas[valor_celda] es: "+str(self.celdas[valor_celda]))
-            boton.text = "0"
-            #print(self.celdas)
-            # Celda sin mina
-            # Implementar acciones para descubrir celdas adyacentes,
-            # actualizar el contador de minas restantes, etc.
+            print("¡Sigue jugando!")
+
                 
 class Informacion(Screen,BoxLayout):
     None
@@ -173,7 +159,13 @@ class Volver(Screen,BoxLayout):
 class MainApp(App):
     title = "Buscaminas Pro 1000"
     icon = 'img/mina.png'
+    @staticmethod
+    def get_juego_buscaminas():
+        if not hasattr(MainApp, "_juego_buscaminas"):
+            MainApp._juego_buscaminas = bm.juegoBuscamina()
+        return MainApp._juego_buscaminas
     def build(self):
+        buscaminas = bm.juegoBuscamina()
         # player = music()
         # playing_label = player.play_music()
         # print(playing_label)
