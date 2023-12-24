@@ -38,22 +38,20 @@ class MainWid(ScreenManager):
     
 
 class Niveles(Screen):
+    
     def __init__(self, **kwargs):
         super(Niveles, self).__init__(**kwargs)
-        #self.nivel = int(kwargs.get("nivel", 10))  # Valor por defecto 10
     def ir_a_juego(self, nivel, mina):
-        datos = {"nivel": nivel, "mina": mina}
-        lanzar_juego = JuegoBuscamina(**datos)
-        lanzar_juego.crear_campo_minado(nivel, mina)
+        # Obtén los valores de nivel y mina      
+        lanzar_juego = JuegoBuscamina()
+        self.manager.current = "juego"
         return lanzar_juego
         
         
 class JuegoBuscamina(Screen):
     minas_restantes = NumericProperty()
     cronometro = NumericProperty()
-    #Esta es la forma correcta de recibir los argumentos desde otra clase
-    nivel = NumericProperty(default=10) 
-    mina = NumericProperty(default=10)
+
     superBox = ObjectProperty()
     def __init__(self,**kwargs):  # Agrega un argumento posicional "nivel"
         super(JuegoBuscamina, self).__init__(**kwargs)
@@ -61,46 +59,15 @@ class JuegoBuscamina(Screen):
         self.columnas = []
         self.minas = []
         self.celdas = []
+
+        self.nivel = 9  
+        self.mina = 30
         
-        print(self.nivel)
-        print(self.mina)
-        self.mostrar_campo()  
-    """  
-    def on_pre_enter(self):
-        #Agregamos un Box Contenedor
-        self.superBox = self.ids.campominado #self.ids.contenedor.ids.campominado
-        
-        print(self.nivel)
-        print(self.mina)
-        #Agregamos un Box Contenedor
-        self.superBox = self.ids.campominado #self.ids.contenedor.ids.campominado
-        
-        # Eliminamos los elementos del superBox
-        self.superBox.clear_widgets()
-        
-        num_celdas = self.nivel**2
-        #Crea el GridLayout
-        grid_layout = GridLayout(
-            rows= self.nivel,
-            cols= self.nivel,  # Usa la propiedad 'cols' en lugar de 'columns'
-            size_hint=(1, 1),
-        )
-        # Añade el GridLayout al BoxLayout
-        self.superBox.add_widget(grid_layout)
-        # Crea los botones
-        botones = [] 
-        for i in range(num_celdas):
-            button = Button(
-            text="{}".format(i + 1),
-            size_hint=(1, 1),
-            )
-            botones.append(button)
-        # Añade los botones al GridLayout
-        for boton in botones:
-            grid_layout.add_widget(boton)
-        #self.mostrar_campo(nivel, self.superBox)
-        """
-    def crear_campo_minado(self, nivel, minas):
+        self.crear_campo_minado()
+         
+    def crear_campo_minado(self):
+        nivel = self.nivel
+        minas = self.mina
         num_celdas = nivel**2
         #Generamos la posición de las minas de forma aleatoria
         for i in range(minas):
@@ -109,8 +76,10 @@ class JuegoBuscamina(Screen):
         
         #Asignamos a las celdas un false cuándo no hay minas true cuándo sí las hay
         self.celdas = self.minar_celdas(num_celdas, self.minas)
+        #print(self.celdas)
         #Agregamos los widget con el Grid y los botones
-        self.mostrar_campo()
+        self.mostrar_campo(self.nivel)
+        
         #print(self.celdas)
         
     def minar_celdas(self, num_celdas, minas):
@@ -120,96 +89,94 @@ class JuegoBuscamina(Screen):
                 celdas[i] = 0
         return celdas
   
-    def mostrar_campo(self):
+    def mostrar_campo(self, nivel):
+        self.bandera = False
         self.contenedor = Contenedor()
         self.volver = Volver()
         self.informacion = Informacion()
         self.campominado = CampoMinado()
+        #Creamos el BoxLayout
+        self.box_layout = BoxLayout(
+            orientation="vertical"
+        )
         
+        #Agregamos los widgets
+        self.box_layout.add_widget(self.informacion)
+        self.box_layout.add_widget(self.campominado)
+        self.box_layout.add_widget(self.volver)
+        self.contenedor.add_widget(self.box_layout)
         self.add_widget(self.contenedor)
-        self.contenedor.add_widget(self.informacion)
-        self.contenedor.add_widget(self.campominado)
-        self.contenedor.add_widget(self.volver)
-        
+          
         # Eliminamos los elementos del superBox
-        #self.campominado.clear_widgets()
-        
-        
-  
-        # Changing the color of buttons 
-        # Agregamos el botón volver
-        bt_volver = Button(pos_hint = {'center_x': 1, 'center_y': 0.5},
-            size_hint = (.3, 1),
-            text = 'Volver',
-            font_size = 20,
-            background_color = (1,0,1,1))
-        bt_volver1 = Button(pos_hint = {'center_x': 1, 'center_y': 0.5},
-            size_hint = (.3, 1),
-            text = 'Volver',
-            font_size = 20,
-            background_color = (1,0,1,1))
-        bt_volver2 = Button(pos_hint = {'center_x': 1, 'center_y': 0.5},
-            size_hint = (.3, 1),
-            text = 'Volver',
-            font_size = 20,
-            background_color = (1,0,1,1))
-        # volver.add_widget(bt_volver)  
-        #self.informacion.add_widget(bt_volver)  
-        #campominado.add_widget(bt_volver2)  
-        #campominado.add_widget(bt_volver1)  
+        self.campominado.clear_widgets()
 
-        
-        
-        
-        
-        # #Agregamos los widgets
-        # self.add_widget(contenedor)
-        # contenedor.add_widget(campominado)
-        # contenedor.add_widget(informacion)
-        # contenedor.add_widget(volver)
-        # campominado.add_widget(superBox)
-        
         num_celdas = self.nivel**2
+        
         # Crea el GridLayout
         grid_layout = GridLayout(
-            rows=self.nivel,
-            cols=self.nivel,  # Usa la propiedad 'cols' en lugar de 'columns'
+            rows=nivel,
+            cols=nivel,  
             size_hint=(1, 1),
-        )
+         )
         # Añade el GridLayout al BoxLayout
-        #superBox.add_widget(grid_layout)
+        self.campominado.add_widget(grid_layout)
         # Crea los botones
         botones = []
         for i in range(num_celdas):
             button = Button(
-            text="{}".format(i + 1),
+            text= str(i),
             size_hint=(1, 1),
             )
+            #button.on_press(text = str(celdas[i]))
+            button.bind(on_press=lambda x, i=i: self.abrir_boton(x, i))  # Usa bind() para pasar el botón como argumento
+            
             botones.append(button)
-        # Añade los botones al GridLayout
+            # Añade los botones al GridLayout
         for boton in botones:
             grid_layout.add_widget(boton)
-            
-        print(self.nivel)
-        print(self.mina)
-  
+        #print(self.nivel)
+        #print(self.mina)
+    
+    def abrir_boton(self,boton, indice):
+        valor_celda = int(self.celdas[indice])
+        #boton.text = str(valor_celda)
+        #print("El valor del indice es: "+ str(indice))
+        #print("El valor del botón es: "+str(boton))
+
+        # Acciones del juego (ejemplo básico):
+        print(self.celdas)
+        if self.celdas[valor_celda] == 1:
+            print("self.celdas es: "+str(self.celdas))
+            print("self.celdas[valor_celda] es: "+str(self.celdas[valor_celda]))
+            boton.text = "1"
+            # ¡Mina!          
+            print("¡Has perdido!")
+            # Implementar acciones para finalizar la partida
+        else:
+            print("self.celdas es: "+str(self.celdas))
+            print("self.celdas[valor_celda] es: "+str(self.celdas[valor_celda]))
+            boton.text = "0"
+            #print(self.celdas)
+            # Celda sin mina
+            # Implementar acciones para descubrir celdas adyacentes,
+            # actualizar el contador de minas restantes, etc.
                 
-class Informacion(BoxLayout):
+class Informacion(Screen,BoxLayout):
     None
-class Contenedor(BoxLayout):
+class Contenedor(Screen,BoxLayout):
     None
-class CampoMinado(BoxLayout):
+class CampoMinado(Screen,BoxLayout):
     None
-class Volver(BoxLayout):
+class Volver(Screen,BoxLayout):
     None
     
 class MainApp(App):
     title = "Buscaminas Pro 1000"
     icon = 'img/mina.png'
     def build(self):
-        player = music()
-        playing_label = player.play_music()
-        print(playing_label)
+        # player = music()
+        # playing_label = player.play_music()
+        # print(playing_label)
         return MainWid()
     
 if __name__ == '__main__':
