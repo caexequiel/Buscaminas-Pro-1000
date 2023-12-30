@@ -1,18 +1,19 @@
-import numpy
+import numpy as np
 import random
 
 # Lista de posiciones visitadas
 visitados = []
 cerosTotales=[]
-
+nivel = 4
 
 class juegoBuscamina():
     def __init__(self, filas=5, columnas=5):
-        self.nivel = 10
         #self.mecanicaJuego(self.nivel)
-        self.matrizUsuario = [['[ ]' for i in range(self.nivel)] for j in range(self.nivel)]
-        
+
+        self.matrizUsuario = [['[ ]' for i in range(nivel)] for j in range(nivel)]
+        self.matriz_privada = [['[ ]' for i in range(nivel)] for j in range(nivel)]  
     def crear_campo_minado(self,n, m, proporcion):
+        nivel = n
         matriz = [[0 for i in range(m)] for j in range(n)]
         for i in range(n):
             for j in range(m):
@@ -35,16 +36,21 @@ class juegoBuscamina():
                                 if matriz[x + di][y + dj] == 1:
                                     num_1_alrededor += 1
                 else:
-                    num_1_alrededor = "b"
+                    num_1_alrededor = "Bom"
                 # Almacena el resultado
+                if num_1_alrededor == 0:
+                    num_1_alrededor = ""
                 matriz2[x][y] = num_1_alrededor
 
         return matriz2
                 
     def mostrarMatriz(self, matriz):
+        matriz_auxiliar = np.copy(matriz)
         for i in range(len(matriz)):
             for j in range(len(matriz[0])):
-                print(matriz[i][j], end=" ")
+                if matriz[i][j] == "":
+                    matriz_auxiliar[i][j] = "0"
+                print(matriz_auxiliar[i][j], end=" ")
             print() 
 
     def recorrer_matriz_radial(self, matriz, fila, columna):
@@ -60,17 +66,17 @@ class juegoBuscamina():
             # Agrega la posición a la lista de visitados
             cerosTotales.append((fila, columna))
             #Si la casilla se puede destapar
-            if not matriz[fila][columna] == self.matrizUsuario[fila][columna] and matriz[fila][columna] != 0:
+            if not matriz[fila][columna] == self.matrizUsuario[fila][columna] and matriz[fila][columna] != "":
                 self.eleccionUsuario(fila, columna, str(matriz[fila][columna]))
             # Si no hay minas cerca, intento destapar las vecinas
-            if matriz[fila][columna] == 0 and matriz[fila][columna] != self.matrizUsuario[fila][columna]:
-                for fila2 in range(max(0, fila - 1), min(9, fila + 1) + 1):
-                    for columna2 in range(max(0, columna - 1), min(9, columna + 1) + 1):
+            if matriz[fila][columna] == "" and matriz[fila][columna] != self.matrizUsuario[fila][columna]:
+                for fila2 in range(max(0, fila - 1), min(nivel, fila + 1) + 1):
+                    for columna2 in range(max(0, columna - 1), min(nivel, columna + 1) + 1):
                         # Si la posición está dentro de los límites de la matriz
                         if 0 <= fila2 < len(matriz) and 0 <= columna2 < len(matriz[0]):
                             if matriz[fila2][columna2] != 9:
-                                if matriz[fila2][columna2] == 0:
-                                    self.eleccionUsuario(fila2, columna2, "-")
+                                if matriz[fila2][columna2] == "":
+                                    self.eleccionUsuario(fila2, columna2, "")
                                     ceros.append((fila2, columna2))
                                                                 
                                 else:
@@ -91,11 +97,12 @@ class juegoBuscamina():
     def matriz_usuario(self):
         return self.matrizUsuario 
 
+
     def jugar(self, matriz,x,y):
-        if matriz[x][y] == "b":
+        if matriz[x][y] == "Bom":
             print("perdiste")
-            self.eleccionUsuario(x,y, "B")
-        if matriz[x][y] == 0:
+            self.eleccionUsuario(x,y, "Bom")
+        if matriz[x][y] == "":
             self.recorrer_matriz_radial(matriz,x,y)  
             print("Llegó")#matriz2)          
         else:
@@ -105,38 +112,14 @@ class juegoBuscamina():
     def eleccionUsuario(self,y,x, valor):
         self.matrizUsuario[y][x] = valor
         
-    def mecanicaJuego(self, nivel):
+"""    def mecanicaJuego(self, nivel):
         #Campo de juego coloca las bombas en las diferentes posiciones
         CampoJuego = self.crear_campo_minado(nivel, nivel, 0.1)
-        #print("Campo de juego")
-        #mostrarMatriz(CampoJuego)
         #la matriz contar es solo para el programa, ya están reveladas las celdas
-        matriz_privada = self.contar_1_alrededor(CampoJuego)
-        #print("La matriz privada:")
-        #self.mostrarMatriz(matriz_privada)
-        
-        #self.matrizUsuario = [['[ ]' for i in range(len(CampoJuego[0]))] for j in range(len(CampoJuego))]
-        #print("La matriz que se le muestra al usuario")
-        #self.mostrarMatriz(matrizUsuario)
-        
-        # x = int(input("Elije la fila: "))
-        # y = int(input("Elije la columna: "))
-        
-        # #recorrer_matriz_radial(matriz_con_contar, x, y, matrizUsuario)
-        
-        
-        # while (CampoJuego[x][y] == 0):
-        #     # if matriz_con_contar[x][y] == 0:
-        #     #     recorrer_matriz_radial(matriz_con_contar, x, y, matrizUsuario)
-        #     self.jugar(matriz_con_contar,x,y, matrizUsuario)
-        #     print("La matriz privada:")
-        #     self.mostrarMatriz(matriz_con_contar)
-        #     print("La matriz que se le muestra al usuario")
-        #     self.mostrarMatriz(matrizUsuario)
-        #     x = int(input("Elije la fila: "))
-        #     y = int(input("Elije la columna: "))
-            
-        # print("Perdiste")
-    
+        self.matriz_privada = self.contar_1_alrededor(CampoJuego)
+
+
 juego = juegoBuscamina()
+"""
+    
         
